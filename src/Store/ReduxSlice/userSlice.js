@@ -2,7 +2,7 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: {
-    name: "amila",
+    name: "default",
   },
 };
 

@@ -1,5 +1,12 @@
+import logout from "../../Utils/auth/logout";
+
 const User = () => {
-  return <div className=" pt-[200px]">user</div>;
+  return (
+    <div className=" pt-[200px]">
+      user
+      <button onClick={logout}>logout</button>
+    </div>
+  );
 };
 
 export default User;

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import userRegister from "../../Utils/auth/register";
-import { signOut } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import userLogin from "../../Utils/auth/login";
 
 const Login = () => {
   const [select, setSelect] = useState("login");
@@ -50,22 +49,29 @@ export default Login;
  */
 
 const LoginComponent = () => {
+  const loginHandle = (e) => {
+    e.preventDefault();
+
+    const email = e.target["email"].value;
+    const password = e.target["password"].value;
+
+    userLogin(email, password);
+
+    // console.log(email, password);
+  };
   return (
     <div>
       <h1>Login</h1>
-      <button
-        onClick={() => {
-          signOut(auth)
-            .then(() => {
-              // Sign-out successful.
-            })
-            .catch((error) => {
-              // An error happened.
-            });
-        }}
-      >
-        Log Out
-      </button>
+      <form onSubmit={loginHandle}>
+        <input type="text" name="email" placeholder="Enter your email" />
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter your password"
+        />
+
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 };
