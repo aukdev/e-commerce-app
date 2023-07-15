@@ -9,14 +9,17 @@ const AdminProtected = () => {
 
   useEffect(() => {
     if (userData.name) {
-      console.log("name");
+      // console.log("name");
       if (!(userData.name === "default")) {
         // console.log("not default", userData.name === "default");
         if (!(userData.role === "admin")) {
           navigate("/404");
         }
       }
+    } else {
+      navigate("/404");
     }
+    console.log("admin use effect");
     // eslint-disable-next-line
   }, [userData]);
 

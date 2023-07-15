@@ -1,6 +1,7 @@
 import { useState } from "react";
 import userRegister from "../../Utils/auth/register";
 import userLogin from "../../Utils/auth/login";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [select, setSelect] = useState("login");
@@ -49,13 +50,14 @@ export default Login;
  */
 
 const LoginComponent = () => {
+  const navigate = useNavigate();
   const loginHandle = (e) => {
     e.preventDefault();
 
     const email = e.target["email"].value;
     const password = e.target["password"].value;
 
-    userLogin(email, password);
+    userLogin(email, password, navigate);
 
     // console.log(email, password);
   };
