@@ -59,7 +59,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/404",
+    path: "/*",
     element: <NoUrl />,
   },
   {

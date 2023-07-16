@@ -35,7 +35,7 @@ function App() {
       }
     });
 
-    return () => userCheck;
+    return userCheck;
     // eslint-disable-next-line
   }, []);
 
