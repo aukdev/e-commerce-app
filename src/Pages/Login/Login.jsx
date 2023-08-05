@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import userRegister from "../../Utils/auth/register";
 import userLogin from "../../Utils/auth/login";
 import { useNavigate } from "react-router-dom";
 import emailValidate from "../../Utils/validate/emailValidate";
+import passwordValidate from "../../Utils/validate/passwordValidate";
 
 const Login = () => {
   const [select, setSelect] = useState("login");
@@ -49,7 +50,14 @@ export default Login;
  */
 
 const LoginComponent = () => {
+  console.log("LoginComponent");
+
   const navigate = useNavigate();
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [firebaseError, setFirebaseError] = useState({
+    email: false,
+    password: false,
+  });
 
   const loginHandle = (e) => {
     e.preventDefault();
@@ -57,7 +65,11 @@ const LoginComponent = () => {
     const email = e.target["email"].value;
     const password = e.target["password"].value;
 
-    // userLogin(email, password, navigate);
+    if (canSubmit && email.length > 0 && password.length > 0) {
+      userLogin(email, password, navigate, setFirebaseError);
+    } else {
+      console.log("can submit", canSubmit);
+    }
 
     console.log(email, password);
   };
@@ -73,14 +85,20 @@ const LoginComponent = () => {
           label="Your Email"
           name="email"
           placeholder="Enter Your Email"
-          errorMsgBase="email error"
+          errorMsgBase="email"
+          setCanSubmit={setCanSubmit}
+          firebaseError={firebaseError}
+          setFirebaseError={setFirebaseError}
         />
         <LoginInputBox
           inputType="password"
           label="Password"
           name="password"
           placeholder="Enter Your Password"
-          errorMsgBase="password error"
+          errorMsgBase="password"
+          setCanSubmit={setCanSubmit}
+          firebaseError={firebaseError}
+          setFirebaseError={setFirebaseError}
         />
 
         <button
@@ -145,9 +163,30 @@ const LoginInputBox = ({
   placeholder,
   name,
   errorMsgBase,
+  setCanSubmit,
+  firebaseError,
+  setFirebaseError,
 }) => {
-  const [error, serError] = useState(true);
+  console.log("LoginInputBox");
+
+  const [error, setError] = useState(false);
   const [errMsg, setErrMsg] = useState([]);
+
+  useEffect(() => {
+    if (errorMsgBase === "email") {
+      if (firebaseError.email !== false) {
+        setError(true);
+        setErrMsg([firebaseError.email]);
+      }
+    }
+
+    if (errorMsgBase === "password") {
+      if (firebaseError.password !== false) {
+        setError(true);
+        setErrMsg([firebaseError.password]);
+      }
+    }
+  }, [firebaseError]);
 
   return (
     <>
@@ -167,17 +206,64 @@ const LoginInputBox = ({
           className={` outline-none w-full ${
             error && "placeholder:text-red-500 text-red-500"
           }`}
-          onBlur={(e) => emailValidate(e.target.value, setErrMsg)}
+          onBlur={(e) =>
+            errorMsgBase === "email"
+              ? emailValidate(e.target.value, setErrMsg, setError, setCanSubmit)
+              : errorMsgBase === "password"
+              ? passwordValidate(
+                  e.target.value,
+                  setErrMsg,
+                  setError,
+                  setCanSubmit
+                )
+              : () => {}
+          }
+          onChange={() => {
+            if (errorMsgBase === "email") {
+              if (firebaseError.email !== false) {
+                setFirebaseError((pre) => {
+                  const temp = { ...pre, email: false };
+                  return temp;
+                });
+              }
+            }
+
+            if (errorMsgBase === "password") {
+              if (firebaseError.password !== false) {
+                setFirebaseError((pre) => {
+                  const temp = { ...pre, password: false };
+                  return temp;
+                });
+              }
+            }
+            if (error) {
+              setError(false);
+              setCanSubmit(true);
+              setErrMsg([]);
+            }
+          }}
           type={inputType}
           name={name}
           placeholder={placeholder}
         />
       </div>
-      {error && (
-        <p className=" text-red-500 font-bold w-[90%] text-sm mt-[-12px] ml-3">
-          {errMsg?.join(",")}
-        </p>
-      )}
+      {error &&
+        (errorMsgBase === "password" ? (
+          errMsg.map((err, index) => (
+            <p
+              key={index}
+              className={` text-red-500 font-bold w-[90%] text-sm ${
+                index === 0 && "mt-[-12px]"
+              } ml-3`}
+            >
+              {err}
+            </p>
+          ))
+        ) : (
+          <p className=" text-red-500 font-bold w-[90%] text-sm mt-[-12px] ml-3">
+            {errMsg?.join(", ")}
+          </p>
+        ))}
     </>
   );
 };
