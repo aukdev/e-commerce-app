@@ -3,7 +3,11 @@ import userRegister from "../../Utils/auth/register";
 import userLogin from "../../Utils/auth/login";
 import { useNavigate } from "react-router-dom";
 import emailValidate from "../../Utils/validate/emailValidate";
-import passwordValidate from "../../Utils/validate/passwordValidate";
+import passwordValidate, {
+  confirmPasswordValidate,
+} from "../../Utils/validate/passwordValidate";
+import { genderData } from "../../Utils/data";
+import userDataValidate from "../../Utils/validate/userDataValidate";
 
 const Login = () => {
   const [select, setSelect] = useState("login");
@@ -73,6 +77,7 @@ const LoginComponent = () => {
 
     console.log(email, password);
   };
+
   return (
     <div className=" w-[90%] p-5 shadow-lg flex flex-col items-center">
       <h1 className=" text-3xl font-bold mb-7">Login</h1>
@@ -116,38 +121,173 @@ const LoginComponent = () => {
  *
  */
 
+const firebaseError = {
+  email: false,
+  password: false,
+};
+
+const setFirebaseError = (setter = () => {}) => {};
+
 const RegisterComponent = () => {
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [section, setSection] = useState(1);
+
   const registerHandle = (e) => {
     e.preventDefault();
 
-    const name = `${e.target[0].value} ${e.target[1].value}`;
-    const email = e.target[2].value;
-    const address = e.target[3].value;
-    const password = e.target[4].value;
-    const cPassword = e.target[5].value;
-    const phoneNumber = e.target[6].value;
-    const profileImage = e.target[7].value;
+    const firstname = e.target["firstname"].value;
+    const lastname = e.target["lastname"].value;
+    const gender = e.target["gender"].value;
+    const address = e.target["address"].value;
+    const email = e.target["email"].value;
+    const phone = e.target["phone"].value;
+    const password = e.target["password"].value;
+    const cpassword = e.target["cpassword"].value;
 
-    if (password === cPassword) {
-      userRegister(email, password, name, address, phoneNumber, profileImage);
+    const name = `${firstname} ${lastname}`;
+
+    if (
+      canSubmit &&
+      firstname &&
+      lastname &&
+      gender &&
+      address &&
+      email &&
+      phone &&
+      password &&
+      cpassword
+    ) {
+      userRegister(email, password, name, gender, address, phone);
+    } else {
+      console.log("can not submit");
     }
   };
 
   return (
-    <div>
-      <h1>Register</h1>
-      <form onSubmit={registerHandle}>
-        <div>
-          <input type="text" placeholder="Your First Name" />
-          <input type="text" placeholder="Your Last Name" />
+    <div className=" w-[90%] p-5 shadow-lg flex flex-col items-center">
+      <h1 className=" text-3xl font-bold mb-7">Register</h1>
+      <form
+        onSubmit={registerHandle}
+        className=" w-full flex flex-col items-center"
+      >
+        <div className={` w-full ${section === 2 && "hidden"}`}>
+          <LoginInputBox
+            inputType="text"
+            label="First Name"
+            name="firstname"
+            placeholder="Your First Name"
+            errorMsgBase="firstname"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+          <LoginInputBox
+            inputType="text"
+            label="Last Name"
+            name="lastname"
+            placeholder="Your Last Name"
+            errorMsgBase="lastname"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+          <LoginInputBox
+            inputType="text"
+            label="Gender"
+            name="gender"
+            placeholder="Your Gender"
+            errorMsgBase="gender"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+            selectorData={genderData}
+          />
+          <LoginInputBox
+            inputType="text"
+            label="Address"
+            name="address"
+            placeholder="Your Address"
+            errorMsgBase="address"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
         </div>
-        <input type="email" placeholder="Your email Address" />
-        <input type="text" placeholder="Your Address" />
-        <input type="password" placeholder="Password" />
-        <input type="password" placeholder="Confirm Password" />
-        <input type="text" placeholder="Your Phone Number" />
-        <input type="text" placeholder="Your Profile Image" />
-        <button type="submit">Register</button>
+        <div className={` w-full ${section === 1 && "hidden"}`}>
+          <LoginInputBox
+            inputType="email"
+            label="Email"
+            name="email"
+            placeholder="Your Email Address"
+            errorMsgBase="email"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+          <LoginInputBox
+            inputType="text"
+            label="Phone Number"
+            name="phone"
+            placeholder="Your Phone Number"
+            errorMsgBase="phone"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+          <LoginInputBox
+            inputType="password"
+            label="Password"
+            name="password"
+            placeholder="Password"
+            errorMsgBase="password"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+          <LoginInputBox
+            inputType="password"
+            label="Confirm Password"
+            name="cpassword"
+            placeholder="Confirm Password"
+            errorMsgBase="cpassword"
+            setCanSubmit={setCanSubmit}
+            firebaseError={firebaseError}
+            setFirebaseError={setFirebaseError}
+          />
+        </div>
+
+        <div
+          className={` w-full flex ${
+            section === 1 ? "justify-end" : "justify-between"
+          } px-7`}
+        >
+          {section === 2 && (
+            <>
+              <button
+                className=" font-bold mt-4 px-5 py-1 border-[2px] hover:shadow-lg hover:bg-slate-100 border-[black] rounded"
+                type="submit"
+                onClick={() => setSection(1)}
+              >
+                Back
+              </button>
+              <button
+                className=" font-bold mt-4 px-5 py-1 border-[2px] hover:shadow-lg hover:bg-slate-100 border-[black] rounded"
+                type="submit"
+              >
+                Register
+              </button>
+            </>
+          )}
+          {section === 1 && (
+            <button
+              className=" font-bold mt-4 px-5 py-1 border-[2px] hover:shadow-lg hover:bg-slate-100 border-[black] rounded"
+              type="submit"
+              onClick={() => setSection(2)}
+            >
+              Next
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
@@ -166,6 +306,7 @@ const LoginInputBox = ({
   setCanSubmit,
   firebaseError,
   setFirebaseError,
+  selectorData,
 }) => {
   console.log("LoginInputBox");
 
@@ -191,7 +332,7 @@ const LoginInputBox = ({
   return (
     <>
       <div
-        className={` relative w-[90%] border p-3 ${
+        className={` relative w-[95%] border p-3 ${
           error ? "border-red-500" : "border-gray-400"
         } rounded-[5px] m-3`}
       >
@@ -202,50 +343,98 @@ const LoginInputBox = ({
         >
           {label}
         </label>
-        <input
-          className={` outline-none w-full ${
-            error && "placeholder:text-red-500 text-red-500"
-          }`}
-          onBlur={(e) =>
-            errorMsgBase === "email"
-              ? emailValidate(e.target.value, setErrMsg, setError, setCanSubmit)
-              : errorMsgBase === "password"
-              ? passwordValidate(
-                  e.target.value,
-                  setErrMsg,
-                  setError,
-                  setCanSubmit
-                )
-              : () => {}
-          }
-          onChange={() => {
-            if (errorMsgBase === "email") {
-              if (firebaseError.email !== false) {
-                setFirebaseError((pre) => {
-                  const temp = { ...pre, email: false };
-                  return temp;
-                });
-              }
+        {selectorData ? (
+          <select
+            name={name}
+            defaultValue={selectorData.defaultValue}
+            className="outline-none w-full bg-transparent"
+          >
+            {selectorData.data.map(({ value, title }) => (
+              <option key={value} value={value}>
+                {title}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            className={` outline-none w-full ${
+              error && "placeholder:text-red-500 text-red-500"
+            }`}
+            onBlur={(e) =>
+              errorMsgBase === "email"
+                ? emailValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit
+                  )
+                : errorMsgBase === "password"
+                ? passwordValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit
+                  )
+                : errorMsgBase === "cpassword"
+                ? confirmPasswordValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit
+                  )
+                : errorMsgBase === "address"
+                ? userDataValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit,
+                    errorMsgBase
+                  )
+                : errorMsgBase === "phone"
+                ? userDataValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit,
+                    errorMsgBase
+                  )
+                : userDataValidate(
+                    e.target.value,
+                    setErrMsg,
+                    setError,
+                    setCanSubmit,
+                    label
+                  )
             }
+            onChange={() => {
+              if (errorMsgBase === "email") {
+                if (firebaseError.email !== false) {
+                  setFirebaseError((pre) => {
+                    const temp = { ...pre, email: false };
+                    return temp;
+                  });
+                }
+              }
 
-            if (errorMsgBase === "password") {
-              if (firebaseError.password !== false) {
-                setFirebaseError((pre) => {
-                  const temp = { ...pre, password: false };
-                  return temp;
-                });
+              if (errorMsgBase === "password") {
+                if (firebaseError.password !== false) {
+                  setFirebaseError((pre) => {
+                    const temp = { ...pre, password: false };
+                    return temp;
+                  });
+                }
               }
-            }
-            if (error) {
-              setError(false);
-              setCanSubmit(true);
-              setErrMsg([]);
-            }
-          }}
-          type={inputType}
-          name={name}
-          placeholder={placeholder}
-        />
+              if (error) {
+                setError(false);
+                setCanSubmit(true);
+                setErrMsg([]);
+              }
+            }}
+            type={inputType}
+            name={name}
+            placeholder={placeholder}
+          />
+        )}
       </div>
       {error &&
         (errorMsgBase === "password" ? (

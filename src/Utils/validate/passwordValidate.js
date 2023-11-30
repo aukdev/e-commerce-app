@@ -20,8 +20,12 @@ const passCharValidateFunction = (password = [], checkCharSet = []) => {
   return state;
 };
 
+let Enteredpassword;
+
 const passwordValidate = (data, errorMsg, error, submit) => {
   const password = String(data).split("");
+
+  Enteredpassword = data;
 
   if (password.length > 8) {
     // PASSWORD VALIDATION SETUP
@@ -53,6 +57,14 @@ const passwordValidate = (data, errorMsg, error, submit) => {
     error(true);
     submit(false);
     errorMsg(["Password must be at least 8 charactors long."]);
+  }
+};
+
+export const confirmPasswordValidate = (data, errorMsg, error, submit) => {
+  if (data !== Enteredpassword) {
+    error(true);
+    submit(false);
+    errorMsg(["Password not matched"]);
   }
 };
 
